@@ -1,22 +1,32 @@
-name: Pulse Bot
+name: Run Pulse Daily
 
 on:
-  workflow_dispatch
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
 
 jobs:
-  pulse:
+  run-bot:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout repository code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install requirements
-        run: pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Run bot
-        run: python bot.py
+    - name: Run Pulse Bot
+      run: python bot.py
+
+    - name: Upload Daily Summary Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: daily-summary
+        path: daily_summary.txt
